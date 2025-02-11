@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>CC.LY - Edit User</title>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .user-form {
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .btn-submit {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            border: none;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .user-image {
+            display: block;
+            margin: 10px auto;
+            max-width: 150px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <%- include ('partials/navbar.ejs') %>
+
+    <div class="container mt-4">
+        <div class="text-center">
+            <h2 class="text-primary">Edit User</h2>
+        </div>
+
+        <div class="user-form mt-4">
+            <form action="/editUser/<%=user.userId%>" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="userName" class="form-label fw-bold">User Name:</label>
+                    <input type="text" id="userName" name="userName" class="form-control" value="<%=user.username%>" required>
+                </div>
+
+            
+                <div class="text-center">
+                    <label class="form-label fw-bold">Current Image:</label><br>
+                    <input type="hidden" name="currentImage" value="<%= user.userImage %>">
+                    <img src="/images/<%= user.userImage %>" class="user-image" alt="User Image">
+                </div>
+
+               
+                <div class="mb-3">
+                    <label for="userImage" class="form-label fw-bold">Upload New Image:</label>
+                    <input type="file" id="userImage" name="userImage" class="form-control" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="userRole" class="form-label fw-bold">User Role:</label>
+                    <select id="userRole" name="userRole" class="form-select" required>
+                        <option value="user" <% if (user.userRole === 'user') { %> selected <% } %>>User</option>
+                        <option value="admin" <% if (user.userRole === 'admin') { %> selected <% } %>>Admin</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-submit">Update User</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

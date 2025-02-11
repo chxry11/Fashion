@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report - CC.LY</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <style>
+    body {
+      background: #f8f9fa;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .report-container {
+      background: url('https://source.unsplash.com/1600x900/?business,finance,shopping') no-repeat center center/cover;
+      min-height: 100vh;
+      padding: 50px 0;
+    }
+
+    .table-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table thead {
+      background-color: #343a40;
+      color: white;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .chart-container {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    svg {
+      width: 100%;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Include Navbar -->
+  <%- include('partials/navbar.ejs') %>
+
+  <div class="report-container">
+    <div class="container">
+      <div class="table-container">
+        <h2 class="mb-4 text-center">Total Sales Report</h2>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Item Name</th>
+              <th>Total Quantity Sold</th>
+              <th>Total Sales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sales.forEach(sale => { %>
+              <tr>
+                <td><%= sale.productName %></td>
+                <td><%= sale.totalQuantity %></td>
+                <td class="total-sales">$<%= sale.totalSales.toFixed(2) %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="chart-container">
+        <h3 class="mt-4 text-center">Total Sales Distribution</h3>
+        <svg viewBox="0 0 400 400">
+          <% 
+            let totalSalesSum = sales.reduce((sum, sale) => sum + sale.totalSales, 0);
+            let startAngle = 0;
+            let colors = ["#457b9d", "#1d3557", "#e63946", "#2a9d8f", "#f4a261", "#264653"];
+          %>
+          
+          <% sales.forEach((sale, index) => { %>
+            <% 
+              let salesRatio = sale.totalSales / totalSalesSum;
+              let endAngle = startAngle + salesRatio * 360;
+              let largeArc = salesRatio > 0.5 ? 1 : 0;
+              let x1 = 200 + 150 * Math.cos((Math.PI / 180) * startAngle);
+              let y1 = 200 + 150 * Math.sin((Math.PI / 180) * startAngle);
+              let x2 = 200 + 150 * Math.cos((Math.PI / 180) * endAngle);
+              let y2 = 200 + 150 * Math.sin((Math.PI / 180) * endAngle);
+              let percentage = (salesRatio * 100).toFixed(1) + "%";
+              let priceLabel = "$" + sale.totalSales.toFixed(2);
+              let textX = 200 + 100 * Math.cos((Math.PI / 180) * ((startAngle + endAngle) / 2));
+              let textY = 200 + 100 * Math.sin((Math.PI / 180) * ((startAngle + endAngle) / 2));
+            %>
+            
+            <path d="M200,200 L<%= x1 %>,<%= y1 %> A150,150 0 <%= largeArc %>,1 <%= x2 %>,<%= y2 %> Z" fill="<%= colors[index % colors.length] %>"></path>
+            <text x="<%= textX %>" y="<%= textY - 10 %>" font-size="12" fill="white" text-anchor="middle"><%= percentage %></text>
+            <text x="<%= textX %>" y="<%= textY + 10 %>" font-size="12" fill="white" text-anchor="middle"><%= priceLabel %></text>
+            
+            <% startAngle = endAngle; %>
+          <% }); %>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
